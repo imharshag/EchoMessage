@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const userModel = require("./models/user");
 const postModel = require("./models/post");
 const cookieParser = require("cookie-parser");
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 const app = express();
 
@@ -13,66 +13,148 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+const allowedUsernames = [
+  "01JST21IS001",
+  "01JST21IS002",
+  "01JST21IS003",
+  "01JST21IS004",
+  "01JST21IS005",
+  "01JST21IS006",
+  "01JST21IS007",
+  "01JST21IS008",
+  "01JST21IS009",
+  "01JST21IS010",
+  "01JST21IS011",
+  "01JST21IS012",
+  "01JST21IS013",
+  "01JST21IS014",
+  "01JST21IS015",
+  "01JST21IS016",
+  "01JST21IS017",
+  "01JST21IS018",
+  "01JST21IS019",
+  "01JST21IS020",
+  "01JST21IS021",
+  "01JST21IS022",
+  "01JST21IS023",
+  "01JST21IS024",
+  "01JST21IS025",
+  "01JST21IS026",
+  "01JST21IS027",
+  "01JST21IS028",
+  "01JST21IS029",
+  "01JST21IS030",
+  "01JST21IS031",
+  "01JST21IS032",
+  "01JST21IS033",
+  "01JST21IS034",
+  "01JST21IS035",
+  "01JST21IS036",
+  "01JST21IS037",
+  "01JST21IS038",
+  "01JST21IS039",
+  "01JST21IS040",
+  "01JST21IS041",
+  "01JST21IS042",
+  "01JST21IS043",
+  "01JST21IS044",
+  "01JST21IS045",
+  "01JST21IS046",
+  "01JST21IS047",
+  "01JST21IS048",
+  "01JST21IS049",
+  "01JST21IS050",
+  "01JST21IS051",
+  "01JST21IS052",
+  "01JST21IS053",
+  "01JST21IS054",
+  "01JST21IS055",
+  "01JST21IS056",
+  "01JST21IS057",
+  "01JST21IS058",
+  "01JST21IS059",
+  "01JST21IS060",
+];
 
-app.get('/home', async (req, res) => {
-    try {
-        let posts = await postModel.find().populate('user');
-        res.render('home', { posts: posts });
-    } catch (err) {
-        console.log(err);
-        res.status(500).send("Server Error");
-    }
+app.get("/home", async (req, res) => {
+  try {
+    let posts = await postModel.find().populate("user");
+    res.render("home", { posts: posts });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Server Error");
+  }
 });
 
 app.get("/register", (req, res) => {
-    res.render("register");
-  });
-
+  res.render("register");
+});
 
 app.get("/", (req, res) => {
-    res.redirect("/register");
-  });
-  
+  res.redirect("/register");
+});
 
-  app.post("/register", async (req, res) => {
-    let { email, name, username, age, password } = req.body;
-  
-    // Check if all fields are filled
-    if (!email || !name || !username || !age || !password) {
-      return res.redirect(`/register?error=All fields are required`);
+app.post("/register", async (req, res) => {
+  let { email, name, username, password } = req.body;
+
+  console.log("Received data:", { email, name, username, password });
+
+  // Check if all fields are filled
+  if (!email || !name || !username || !password) {
+    console.log("Error: All fields are required");
+    return res.redirect(`/register?error=All fields are required`);
+  }
+
+  if (!allowedUsernames.includes(username)) {
+    console.log("Error: Invalid username");
+    return res.redirect(`/register?error=Invalid username`);
+  }
+
+  // Check if the username already exists
+  let existingUser = await userModel.findOne({ username });
+  if (existingUser) {
+    console.log("Error: Username already taken");
+    return res.redirect(`/register?error=Username already taken`);
+  }
+
+  let user = await userModel.findOne({ email });
+  if (user) {
+    console.log("Error: User already exists");
+    return res.redirect(`/register?error=User already exists`);
+  }
+
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) {
+      console.log("Error generating salt:", err);
+      return res.redirect(`/register?error=Error generating salt`);
     }
-  
-    let user = await userModel.findOne({ email });
-    if (user) {
-      return res.redirect(`/register?error=User already exists`);
-    }
-  
-    bcrypt.genSalt(10, (err, salt) => {
-      if (err) return res.redirect(`/register?error=Error generating salt`);
-  
-      bcrypt.hash(password, salt, async (err, hash) => {
-        if (err) return res.redirect(`/register?error=Error hashing password`);
-  
-        try {
-          let newUser = await userModel.create({
-            username,
-            name,
-            email,
-            age,
-            password: hash,
-          });
-  
-          let token = jwt.sign({ email, userid: newUser._id }, "shhh");
-          res.cookie("token", token);
-          return res.redirect(`/login?success=Registration successful`);
-        } catch (err) {
-          return res.redirect(`/register?error=Error creating user`);
-        }
-      });
+
+    bcrypt.hash(password, salt, async (err, hash) => {
+      if (err) {
+        console.log("Error hashing password:", err);
+        return res.redirect(`/register?error=Error hashing password`);
+      }
+
+      try {
+        let newUser = await userModel.create({
+          username,
+          name,
+          email,
+          password: hash,
+        });
+
+        console.log("User created successfully:", newUser);
+
+        let token = jwt.sign({ email, userid: newUser._id }, "shhh");
+        res.cookie("token", token);
+        return res.redirect(`/login`);
+      } catch (err) {
+        console.log("Error creating user:", err);
+        return res.redirect(`/register?error=Error creating user`);
+      }
     });
   });
-  
-  
+});
 
 app.get("/login", (req, res) => {
   res.render("login");
@@ -83,71 +165,40 @@ app.get("/logout", (req, res) => {
   res.redirect("/home");
 });
 
-app.get("/profile", isloggedIn,async (req, res) => {
-    let user = await userModel.findOne({email: req.user.email}).populate("posts"); 
-  res.render("profile",{user});
+app.get("/profile", isloggedIn, async (req, res) => {
+  let user = await userModel
+    .findOne({ email: req.user.email })
+    .populate("posts");
+  res.render("profile", { user });
 });
 
-app.get("/like/:id", async (req, res) => {
-    // try {
-        let post = await postModel.findOne({ _id: req.params.id });
+app.get("/edit/:id", isloggedIn, async (req, res) => {
+  let post = await postModel.findOne({ _id: req.params.id }).populate("user");
 
-        console.log(req.user)
-
-    //     if (!post) {
-    //         return res.status(404).send("Post not found");
-    //     }
-
-    //     // Ensure user is authenticated
-    //     if (!req.user) {
-    //         return res.status(401).send("You must be logged in to like posts");
-    //     }
-
-    //     // Handle likes for authenticated users
-    //     const userId = req.user.userid;
-    //     const userIndex = post.likes.indexOf(userId);
-
-    //     if (userIndex === -1) {
-    //         // Add like if not already present
-    //         post.likes.push(userId);
-    //     } else {
-    //         // Remove like if already present
-    //         post.likes.splice(userIndex, 1);
-    //     }
-
-    //     await post.save();
-    //     res.redirect("/home");  // Redirect to the home page or any other page you prefer
-    // } catch (error) {
-    //     res.status(500).send("An error occurred");
-    // }
+  res.render("edit", { post });
 });
 
+app.post("/update/:id", isloggedIn, async (req, res) => {
+  let post = await postModel.findOneAndUpdate(
+    { _id: req.params.id },
+    { content: req.body.content }
+  );
 
-app.get("/edit/:id", isloggedIn, async (req, res) =>{
-    let post = await postModel.findOne({_id: req.params.id}).populate("user");
+  res.redirect("/profile");
+});
 
-    res.render("edit", {post});
-})
+app.post("/post", isloggedIn, async (req, res) => {
+  let user = await userModel.findOne({ email: req.user.email });
+  let { content } = req.body;
+  let post = await postModel.create({
+    user: user._id,
+    content: content,
+  });
 
-app.post("/update/:id", isloggedIn, async(req,res) => {
-    let post = await postModel.findOneAndUpdate({_id: req.params.id}, {content: req.body.content});
-
-    res.redirect("/profile");
-
-})
-
-app.post("/post", isloggedIn, async(req,res) =>{
-    let user = await userModel.findOne({email: req.user.email});
-    let{content} = req.body;
-    let post = await postModel.create({
-        user: user._id,
-        content: content
-    })
-
-    user.posts.push(post._id);
-    await user.save();
-    res.redirect("/profile");
-})
+  user.posts.push(post._id);
+  await user.save();
+  res.redirect("/profile");
+});
 
 app.post("/login", async (req, res) => {
   let { email, password } = req.body;
@@ -176,8 +227,6 @@ app.post("/login", async (req, res) => {
     }
   });
 });
-
-
 
 function isloggedIn(req, res, next) {
   if (!req.cookies.token || req.cookies.token === "") {

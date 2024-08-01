@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini-project</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+    <div class="w-full min-h-screen bg-zinc-900 text-white p-10">
+        <div class="w-full flex justify-end">
+            <a class="bg-red-500 rounded-md px-3 py-2 text-sm mb-5 inline-block mt-3" href="/register">Logout</a>
+        </div>
+        <a class="bg-zinc-100 rounded-md px-3 py-2 text-sm mb-5 inline-block mt-3 text-blue-500" href="/profile">back</a>
+        <h3 class="text-3xl mb-5"><span class="font-light">Welcome Everyone</span></h3>
+
+        <div class="posts mt-20">
+            <h3 class="text-zinc-400">Every Rumor</h3>
+            <div class="postcontainer mt-5 flex flex-wrap gap-4">
+                <% posts.reverse().forEach(function(post) { %>
+                    <div class="post w-1/4 p-4 mb-4 rounded-md border-2 border-zinc-700 bg-zinc-900">
+                        <h4 class="text-blue-500 mb-2">Anonymous</h4>
+                        <p class="text-sm tracking-tight"><%= post.content %></p>
+                        <small class="mt-1 inline-block"><%= post.likes.length %> likes</small>
+                        <div class="btns flex gap-4 mt-5">
+                            <a class="text-blue-500" href="/like/<%= post._id %>">Like</a>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -2,7 +2,7 @@
 
 **Status:** 🚧 *Still in Build* 🚧
 
-Echo is currently under construction. We're working hard to bring you an amazing experience. Stay tuned for updates!
+Echo is currently under Development. We're working hard to bring you an amazing experience. Stay tuned for updates!
 
 ## Demo
 

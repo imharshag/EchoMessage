@@ -1,33 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini-project</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
 
-    <div class="w-full min-h-screen bg-zinc-900 text-white p-10">
-        <div class="w-full flex justify-end">
-            <a class="bg-red-500 rounded-md px-3 py-2 text-sm mb-5 inline-block mt-3" href="/register">Logout</a>
+<body class="bg-gray-900 text-gray-300 flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="w-full bg-gray-800 p-4 shadow-lg flex justify-between items-center">
+        <div class="flex items-center">
+            <!-- Logo -->
+            <div class="whisper-logo text-white text-2xl font-bold">
+                <!-- Replace with your logo -->
+                <span class="text-indigo-400">Whisper &#x1F92B;</span>
+            </div>
         </div>
-        <a class="bg-zinc-100 rounded-md px-3 py-2 text-sm mb-5 inline-block mt-3 text-blue-500" href="/profile">back</a>
-        <h3 class="text-3xl mb-5"><span class="font-light">Welcome Everyone</span></h3>
+        <div class="flex items-center">
+            <!-- Back Button -->
+            <a class="bg-gray-700 hover:bg-gray-600 text-blue-400 rounded-md px-4 py-2 text-sm transition-transform transform hover:scale-105" href="/profile">Back</a>
+        </div>
+    </header>
 
-        <div class="posts mt-20">
-            <h3 class="text-zinc-400">Every Rumor</h3>
-            <div class="postcontainer mt-5 flex flex-wrap gap-4">
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+        <h3 class="text-4xl font-bold text-indigo-400 mb-5">Welcome Everyone</h3>
+
+        <section class="mt-6">
+            <h3 class="text-zinc-400 text-xl font-semibold mb-5">Every Rumor</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                 <% posts.reverse().forEach(function(post) { %>
-                    <div class="post w-1/4 p-4 mb-4 rounded-md border-2 border-zinc-700 bg-zinc-900">
-                        <h4 class="text-blue-500 mb-2">Anonymous</h4>
-                        <p class="text-sm tracking-tight"><%= post.content %></p>
-                        
+                    <div class="w-full max-w-full p-6 rounded-lg border border-gray-700 bg-gray-800 shadow-lg transition-transform transform hover:scale-105">
+                        <h4 class="text-indigo-400 text-lg font-semibold mb-2">Anonymous</h4>
+                        <p class="text-sm tracking-tight text-gray-300"><%= post.content %></p>
                     </div>
                 <% }); %>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
 </body>
+
 </html>

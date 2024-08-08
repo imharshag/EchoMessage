@@ -13,6 +13,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+app.use(express.static('public'));
+
+
 const allowedUsernames = [
   "01JST21IS001",
   "01JST21IS002",
